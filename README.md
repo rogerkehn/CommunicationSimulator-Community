@@ -1,27 +1,23 @@
 # Communication Simulator Community
 
-A public home for community-shared `.simulator` configurations for [Communication Simulator](https://github.com/rogerkehn/CommunicationSimulatorSuite).
+Share `.simulator` configurations from **Windows > Community Simulators** in Communication Simulator. Browse and download without signing in. Every published revision is retained; the application shows one entry per author/name and reveals older revisions on request.
 
-## Planned application integration
+## Immediate publication
 
-- Browse shared configurations in a dedicated Community Simulators window.
-- Show one entry per configuration, with the latest published revision selected.
-- Expand version history only when requested, and download any published revision.
-- Require a posting comment for each new configuration or revision.
-- Keep revisions and posting comments in Git history.
+Choose **Upload**, select a saved simulator file, give it a short name and write a posting comment. Sign in with your own GitHub personal access token (classic `public_repo` scope). The application keeps the token only for this upload dialog. No maintainer credential is shipped in the application.
 
-The application browser and upload integration are not implemented yet. Submission moderation is awaiting the owner's choice. This repository initially contains documentation only.
+Uploads create a submission issue in this repository. GitHub Actions validates it and publishes automatically without maintainer approval, normally within a minute. The issue links to the workflow outcome. Publication may take longer when GitHub queues jobs. If publication fails, the file is not listed; the maintainer can retry the issue using the workflow's Run workflow action. Do not repeatedly upload an uncertain submission.
 
-## Files and contributions
+Each GitHub account owns `simulators/<account>/<name>/`. Use the same name to post a new revision of your own file; other contributors publish under their own account. Revision numbers are submission issue numbers, and can have gaps. The latest revision is the greatest published revision number, even if jobs finish out of order. Files, checksums, dates and required comments are recorded in `catalog.json` and Git history. Published revisions are never overwritten by the uploader. Repository administrators retain moderation/removal powers.
 
-Store configurations under `simulators/<contributor>/<name>.simulator`. Keep the same path when updating an existing configuration so its Git history remains together. Explain the device/protocol, simulator application version, setup requirements and changes in your posting comment. Do not commit passwords, tokens, private addresses, conversation histories, personal information or proprietary manuals. Review the complete file before sharing.
+## Sharing limits and review
 
-A public repository does not give every visitor permission to push to its default branch. GitHub accounts can contribute through forks and pull requests; direct publication requires separately configured permissions or an upload service. The final in-app submission flow will follow the owner's moderation choice.
+Each file must be valid simulator XML, at most 1 MiB after privacy cleanup and small enough to fit a 60,000-character issue (at most 56,000 base64 characters of gzip data). The application reports oversized files before posting. Saved AI conversations and all AI preferences are removed from the shared copy; originals remain unchanged. Inspect the prepared XML: settings and scripts can still contain credentials, network details, personal data or proprietary material. Share only material you own or have permission to distribute and identify its applicable license/permissions in your comment. This repository does not assign a blanket license to contributions or the application.
 
-## Downloading
+Downloaded files are saved only, never automatically opened, compiled, connected or executed. Inspect scripts before opening files in the simulator. Automatic publication validates format and integrity; it is not a hardware, compatibility or security certification.
 
-GitHub's file history preserves earlier committed revisions. The planned application browser will provide latest and previous-version downloads without adding each revision to the main list. Downloaded configurations may contain C# scripts; inspect their contents before manually opening or executing them.
+## Protocol and operations
 
-## Rights
+Submissions use an issue body beginning with `SIMULATOR-SHARE/1` followed by JSON fields `name`, `comment`, `content` (gzip/base64 UTF-8 XML) and `sha256` (uncompressed bytes). Identity comes from the actual issue author, never submitted JSON. Only newly opened submissions trigger publication; edits cannot replace versions. Submit a new issue for each revision. The trusted publisher does not execute contributed scripts, check out contributor branches, download URLs from submissions, or accept arbitrary paths. A manual workflow retry supports recovery. No signing keys, application source or release credentials are held here.
 
-Submit only content you have the right to share. No blanket license is assigned to third-party contributions or the simulator application by this repository. Include applicable permission and license information with contributions; public visibility alone is not a general reuse license.
+Public submission issues themselves contain the encoded file. Closing an issue does not make its data private. Accidental disclosures require GitHub removal/credential rotation as appropriate; avoid uploading secrets in the first place.
