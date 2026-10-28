@@ -1,1 +1,16 @@
-{"schema":1,"versions":[]}
+{
+  "schema": 1,
+  "versions": [
+    {
+      "author": "rogerkehn",
+      "name": "community-sharing-example",
+      "version": 1,
+      "comment": "Initial synthetic example: verifies public posting, automatic publication and version history. No real device settings or secrets.",
+      "created": "2026-10-28T16:55:00Z",
+      "path": "simulators/rogerkehn/community-sharing-example/1.simulator",
+      "sha256": "f06489bcc11ba8a62bd7964690aa122193dac44f50dc138fcdb3fc5ecba43556",
+      "bytes": 180,
+      "issue": "https://github.com/rogerkehn/CommunicationSimulator-Community/issues/1"
+    }
+  ]
+}
