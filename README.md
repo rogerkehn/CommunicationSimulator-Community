@@ -2,6 +2,8 @@
 
 Share `.simulator` configurations from **Windows > Community Simulators** in Communication Simulator. Browse and download without signing in. Every published revision is retained; the application shows one entry per author/name and reveals older revisions on request.
 
+The application browser is introduced in build **1.2026.301.22002** (currently a local preview). Earlier application releases do not contain this window. The repository and automatic publishing service are live; this repository does not publish application binaries.
+
 ## Immediate publication
 
 Choose **Upload**, select a saved simulator file, give it a short name and write a posting comment. Sign in with your own GitHub personal access token (classic `public_repo` scope). The application keeps the token only for this upload dialog. No maintainer credential is shipped in the application.
