@@ -2,7 +2,7 @@
 
 Share `.simulator` configurations from **Windows > Community Simulators** in Communication Simulator. Browse and download without signing in. Every published revision is retained; the application shows one entry per author/name and reveals older revisions on request.
 
-The current compact browser-sharing preview is build **1.2026.301.25001**. Earlier application releases may not contain this window or may show an earlier upload dialog. The repository and automatic publishing service are live; this repository does not publish application binaries.
+The current released application is **1.2026.301.25002**. Download it from [the Communication Simulator website](https://kboxerapps.com/communicationsimulator/). Earlier releases may not include this window or may show an earlier upload dialog. This repository hosts community configurations, not application binaries.
 
 ## Immediate publication
 
