@@ -1,0 +1,25 @@
+name: Publish simulator submission
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Submission issue number to retry
+        required: true
+permissions:
+  contents: write
+  issues: write
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.issue.body, 'SIMULATOR-SHARE/1')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+      - name: Validate and publish configuration without executing it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/publish_submission.py
