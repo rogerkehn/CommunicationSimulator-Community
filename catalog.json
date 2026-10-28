@@ -11,6 +11,17 @@
       "sha256": "f06489bcc11ba8a62bd7964690aa122193dac44f50dc138fcdb3fc5ecba43556",
       "bytes": 180,
       "issue": "https://github.com/rogerkehn/CommunicationSimulator-Community/issues/1"
+    },
+    {
+      "author": "rogerkehn",
+      "name": "community-sharing-example",
+      "version": 2,
+      "comment": "Second synthetic revision: verifies latest-version selection while the earlier revision remains downloadable. No hardware qualification.",
+      "created": "2026-10-28T16:55:00Z",
+      "path": "simulators/rogerkehn/community-sharing-example/2.simulator",
+      "sha256": "f06489bcc11ba8a62bd7964690aa122193dac44f50dc138fcdb3fc5ecba43556",
+      "bytes": 180,
+      "issue": "https://github.com/rogerkehn/CommunicationSimulator-Community/issues/2"
     }
   ]
 }
