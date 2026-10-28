@@ -22,6 +22,17 @@
       "sha256": "f06489bcc11ba8a62bd7964690aa122193dac44f50dc138fcdb3fc5ecba43556",
       "bytes": 180,
       "issue": "https://github.com/rogerkehn/CommunicationSimulator-Community/issues/2"
+    },
+    {
+      "author": "rogerkehn",
+      "name": "browser-sharing-example",
+      "version": 3,
+      "comment": "Browser submission test: public synthetic configuration, no token entry, and automatic publication after GitHub's Submit button. No hardware qualification.",
+      "created": "2026-10-28T17:18:47Z",
+      "path": "simulators/rogerkehn/browser-sharing-example/3.simulator",
+      "sha256": "5d5dea60651e08265abc180bb80dc877c5074d2133bfad60ed08c526144180ea",
+      "bytes": 198,
+      "issue": "https://github.com/rogerkehn/CommunicationSimulator-Community/issues/3"
     }
   ]
 }
