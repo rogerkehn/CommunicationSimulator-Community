@@ -33,6 +33,17 @@
       "sha256": "5d5dea60651e08265abc180bb80dc877c5074d2133bfad60ed08c526144180ea",
       "bytes": 198,
       "issue": "https://github.com/rogerkehn/CommunicationSimulator-Community/issues/3"
+    },
+    {
+      "author": "rogerkehn",
+      "name": "hioki-pw4001-common-20261027",
+      "version": 6,
+      "comment": "asdf",
+      "created": "2026-10-28T17:38:16Z",
+      "path": "simulators/rogerkehn/hioki-pw4001-common-20261027/6.simulator",
+      "sha256": "a552165850933039c55bc358f7ea50ca485034b3fb50d830eef858c82d1c83a2",
+      "bytes": 39663,
+      "issue": "https://github.com/rogerkehn/CommunicationSimulator-Community/issues/6"
     }
   ]
 }

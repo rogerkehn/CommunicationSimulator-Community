@@ -1,0 +1,1081 @@
+
+<CommunicationSimulatorSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Modbus_Client>
+    <InitialValues />
+    <Connection>TCP</Connection>
+    <Framing>TCP</Framing>
+    <Host>127.0.0.1</Host>
+    <Port>502</Port>
+    <SerialPort>COM1</SerialPort>
+    <BaudRate>19200</BaudRate>
+    <DataBits>8</DataBits>
+    <Parity>Even</Parity>
+    <StopBits>One</StopBits>
+    <RtsEnable>false</RtsEnable>
+    <DtrEnable>false</DtrEnable>
+    <UnitId>1</UnitId>
+    <TimeoutMilliseconds>1000</TimeoutMilliseconds>
+    <PollMilliseconds>1000</PollMilliseconds>
+    <TableSize>10000</TableSize>
+  </Modbus_Client>
+  <Modbus_Server>
+    <InitialValues />
+    <Connection>TCP</Connection>
+    <Framing>TCP</Framing>
+    <Host>127.0.0.1</Host>
+    <Port>502</Port>
+    <SerialPort>COM1</SerialPort>
+    <BaudRate>19200</BaudRate>
+    <DataBits>8</DataBits>
+    <Parity>Even</Parity>
+    <StopBits>One</StopBits>
+    <RtsEnable>false</RtsEnable>
+    <DtrEnable>false</DtrEnable>
+    <UnitId>1</UnitId>
+    <TimeoutMilliseconds>1000</TimeoutMilliseconds>
+    <PollMilliseconds>1000</PollMilliseconds>
+    <TableSize>10000</TableSize>
+  </Modbus_Server>
+  <WebSniffer_Port>8888</WebSniffer_Port>
+  <WebSniffer_Hosts>example.com, www.example.com</WebSniffer_Hosts>
+  <WebSniffer_CaptureBodies>true</WebSniffer_CaptureBodies>
+  <WebSniffer_WindowsProxy>true</WebSniffer_WindowsProxy>
+  <ScriptingCode>
+    <ScriptCode>using System;
+using System.Collections.Generic;
+using System.Text;
+using Common;
+using Common_DataTypes;
+using MessageHandlerSystem;
+
+//Use the static class "Helpers" for common tasks like converting bytes to strings...
+//Use "Break();" for debugging with visual studio or SharpDevelop http://www.icsharpcode.net/OpenSource/SD/Download/
+
+class SimulatorScripting : IMessageWindowConverters, ISendBoxConverters, IAutoResponseScripting, IStartStopNotification
+{
+
+	//Called after the simulator file has successfully loaded
+	public void SimulatorFileLoaded()
+	{
+		
+	}
+	
+	//Called once the network connection is made to remote device or COM port has been opened
+	public void SimulatorConnected()
+	{
+		
+	}
+	
+	//Called once the network connection is broken to remote device or COM port has been closed
+	public void SimulatorDisconnected()
+	{
+		
+	}
+	
+	//Called as each chuck of data arrives from the .NET framework to allow the users script to determine when full message has been received.
+	//Message termination mode must be set to "Script"
+	public MessagePacket PacketReceived(DataPacket dataPacket)
+	{
+		//EXAMPLE MessagePacket
+		//MessagePacket messagePacket = new MessagePacket();
+		//messagePacket.Data = dataPacket.Data;
+		//messagePacket.DataPacket = dataPacket;
+		//messagePacket.TimeStamp = dataPacket.TimeStamp;
+		//return messagePacket;	
+
+		return null; //return null if script has not yet detected a full message 
+	}
+	
+	//Called just after a full message is detected. Allows manipulation of the received message packet before further processing.
+	public MessagePacket MessageReceived(MessagePacket messagePacket)
+	{
+		return messagePacket; 
+	}
+	
+	//Called any time something tries to write to message window. Allows the manipulation of what is to be writen to the message window.
+	public string MessageWindowConverter(byte[] data)
+	{
+		//Example of how to make a custom message for message window
+		if (data != null &amp;&amp; data.Length &gt; 0)
+		{
+			string BytesAsString = Helpers.ByteArrayToString(data);
+			string BytesAsHexString = BitConverter.ToString(data);
+			string BytesLengthAsString = data.Length.ToString();
+
+			return BytesAsString.Trim() + " / " + BytesAsHexString + " / Length:" + BytesLengthAsString;
+
+		}
+
+		return "";
+	}
+
+	//Called when the user clicks the send button
+	//Send Box converter mode must be set to "Script"
+	public byte[] SendBoxConverter(string text)
+	{
+		return Helpers.StringToByteArray(text);
+	}
+
+	//Called just before Auto Response System
+	public byte[] PreAutoResponseHandler(MessagePacket messagePacket)
+	{
+		// Returning "null" means auto reponse grid will still check for match
+		// Returning a array of bytes will bypassing auto reponse grid, it is considered handled
+		
+		return null; 
+	}
+
+	//Called just after Auto Response Systems 
+	public byte[] PostAutoResponseHandler(byte[] data)
+	{
+		return data;
+	}
+
+	//Called just before data is sent
+	public byte[] SendingBytesManipulationScript(byte[] data)
+	{
+		return data;
+	}
+	
+	//Called when the user click/unclicks the play button on the tool bar
+	public void UserPressedStartStopToolbarButton(StartStopNotification notification)
+	{
+		
+	}
+
+	//Called only if a debugger is attached
+    //Place this in your code to allow debugger to connect
+	public void Break()
+	{
+		if(System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+	}
+
+}</ScriptCode>
+  </ScriptingCode>
+  <RepeatValue>1</RepeatValue>
+  <Communication_Type>TCP_Listen</Communication_Type>
+  <Log_To_File>false</Log_To_File>
+  <Log_Folder />
+  <Log_MaxFiles>0</Log_MaxFiles>
+  <Notes>HIOKI PW4001 common-command teaching/test simulator, not real hardware. Manual PW4001A971-00 Oct 2025. 28 quick buttons / 29 table rows. CH1 230 V, 5 A, ~1035 W, 50 Hz with bounded random variation; 50 A sensor range profile. TCP test listener port 5023 (real device port 23). CRLF replies, LF/CRLF requests. HEADER OFF default; HEAD ON supported. Only listed single commands and fixed U/I/P/f combination supported. No arbitrary MEAS lists, semicolon compound paths, full event registers, integration, waveform/harmonic output, sensor dynamics or metrological accuracy. Unknown/invalid queries are silent. Random measurements do not model range clipping or exact cross-value physics. Auto Respond must be enabled manually. Never use simulated identity/results as hardware qualification.</Notes>
+  <Local_Nickname>PW4001-SIM</Local_Nickname>
+  <BlankLineAfter>Remote</BlankLineAfter>
+  <Bracket_DataType>Decimal</Bracket_DataType>
+  <VariableMulticast>false</VariableMulticast>
+  <XMLFileVersion>1.0.1</XMLFileVersion>
+  <SimulatorVersion>1.2026.300.20003</SimulatorVersion>
+  <Serial_Remote_Nickname>Remote</Serial_Remote_Nickname>
+  <Serial_Port_Name>COM1</Serial_Port_Name>
+  <Serial_BaudRate>9600</Serial_BaudRate>
+  <Serial_DataBits>8</Serial_DataBits>
+  <Serial_Parity>None</Serial_Parity>
+  <Serial_StopBits>One</Serial_StopBits>
+  <Serial_Handshake>None</Serial_Handshake>
+  <Serial2_Remote_Nickname>Remote2</Serial2_Remote_Nickname>
+  <Serial2_Port_Name>COM2</Serial2_Port_Name>
+  <TCP_Remote_Nickname>Remote</TCP_Remote_Nickname>
+  <TCP_Remote_IP>127.0.0.1</TCP_Remote_IP>
+  <TCP_Port>5023</TCP_Port>
+  <AutoTCPListenDisconnectTimeMS>0</AutoTCPListenDisconnectTimeMS>
+  <TCP_MITM_Device1_Nickname>Device1</TCP_MITM_Device1_Nickname>
+  <TCP_MITM_Device1_Listen_Port>10000</TCP_MITM_Device1_Listen_Port>
+  <TCP_MITM_Device2_Nickname>Device2</TCP_MITM_Device2_Nickname>
+  <TCP_MITM_Device2_Connection_IP>127.0.0.1</TCP_MITM_Device2_Connection_IP>
+  <TCP_MITM_Device2_Connection_Port>10001</TCP_MITM_Device2_Connection_Port>
+  <UDP_MITM_Device1_Nickname>Device1</UDP_MITM_Device1_Nickname>
+  <UDP_MITM_Device1_Local_IP>0.0.0.0</UDP_MITM_Device1_Local_IP>
+  <UDP_MITM_Device1_Local_Port>10000</UDP_MITM_Device1_Local_Port>
+  <UDP_MITM_Device1_Remote_IP>127.0.0.1</UDP_MITM_Device1_Remote_IP>
+  <UDP_MITM_Device1_Remote_Port>10001</UDP_MITM_Device1_Remote_Port>
+  <UDP_MITM_Device2_Nickname>Device2</UDP_MITM_Device2_Nickname>
+  <UDP_MITM_Device2_Local_IP>0.0.0.0</UDP_MITM_Device2_Local_IP>
+  <UDP_MITM_Device2_Local_Port>10002</UDP_MITM_Device2_Local_Port>
+  <UDP_MITM_Device2_Remote_IP>127.0.0.1</UDP_MITM_Device2_Remote_IP>
+  <UDP_MITM_Device2_Remote_Port>10003</UDP_MITM_Device2_Remote_Port>
+  <CAN_Device_ID />
+  <CAN_Channel_1_Enabled>true</CAN_Channel_1_Enabled>
+  <CAN_Channel_1_Baud>500000</CAN_Channel_1_Baud>
+  <CAN_Channel_1_Descriptor_File />
+  <CAN_Channel_2_Enabled>true</CAN_Channel_2_Enabled>
+  <CAN_Channel_2_Baud>500000</CAN_Channel_2_Baud>
+  <CAN_Channel_2_Descriptor_File />
+  <Heartbeat_Enabled>false</Heartbeat_Enabled>
+  <Heartbeat_Message />
+  <Heartbeat_Message_Repeat_Time>5000</Heartbeat_Message_Repeat_Time>
+  <Heartbeat_Message_Timeout>100</Heartbeat_Message_Timeout>
+  <Heartbeat_Show_Messages>true</Heartbeat_Show_Messages>
+  <Device1_IP>192.168.1.100</Device1_IP>
+  <Device1_Nickname>Device1</Device1_Nickname>
+  <Device1_As_Source>true</Device1_As_Source>
+  <Device1_As_Destination>true</Device1_As_Destination>
+  <Device2_IP>192.168.1.101</Device2_IP>
+  <Device2_Nickname>Device2</Device2_Nickname>
+  <Device2_As_Source>true</Device2_As_Source>
+  <Device2_As_Destination>true</Device2_As_Destination>
+  <TCP_Sniffer_Port>10000</TCP_Sniffer_Port>
+  <TCP_Sniffer_Port_As_Source>true</TCP_Sniffer_Port_As_Source>
+  <TCP_Sniffer_Port_As_Destination>true</TCP_Sniffer_Port_As_Destination>
+  <Sniffer_Protocol>TCP</Sniffer_Protocol>
+  <Sniffer_ShowPings>true</Sniffer_ShowPings>
+  <Sniffer_ShowSynAckFins>false</Sniffer_ShowSynAckFins>
+  <PacketLogging_Options>None</PacketLogging_Options>
+  <EtherCAT_Sniffer_DefaultLocalAdapterIP />
+  <EtherCAT_Sniffer_ESI_Folder>ESI</EtherCAT_Sniffer_ESI_Folder>
+  <EtherCAT_Master_Adapter />
+  <EtherCAT_Master_ESI_Folder>ESI</EtherCAT_Master_ESI_Folder>
+  <EtherCAT_Master_CycleMilliseconds>10</EtherCAT_Master_CycleMilliseconds>
+  <UDP_Remote_Nickname>Remote</UDP_Remote_Nickname>
+  <UDP_Remote_IP>255.255.255.255</UDP_Remote_IP>
+  <UDP_Destination_Port>10000</UDP_Destination_Port>
+  <UDP_Receive_Port>10000</UDP_Receive_Port>
+  <UDP_Local_IP>0.0.0.0</UDP_Local_IP>
+  <UDP_PrintSenderIP>false</UDP_PrintSenderIP>
+  <UDP_PrintLocalAdapterIP>false</UDP_PrintLocalAdapterIP>
+  <UDP_PrintDestinationIP>false</UDP_PrintDestinationIP>
+  <UDP_Multicast_Operation>ReceiveOnly</UDP_Multicast_Operation>
+  <UDP_Multicast_Group>239.255.0.1</UDP_Multicast_Group>
+  <UDP_Multicast_Port>10000</UDP_Multicast_Port>
+  <UDP_Multicast_Interface_IP>0.0.0.0</UDP_Multicast_Interface_IP>
+  <UDP_Multicast_TTL>1</UDP_Multicast_TTL>
+  <UDP_Multicast_Loopback>true</UDP_Multicast_Loopback>
+  <UDP_Multicast_Share_Port>true</UDP_Multicast_Share_Port>
+  <UDP_Multicast_Nickname>Multicast</UDP_Multicast_Nickname>
+  <Buffer_Timeout>500</Buffer_Timeout>
+  <Send_Start_Chars />
+  <Send_End_Chars>&lt;13&gt;&lt;10&gt;</Send_End_Chars>
+  <Receive_Start_Chars />
+  <Receive_End_Chars>&lt;10&gt;</Receive_End_Chars>
+  <Receive_End_Timeout>250</Receive_End_Timeout>
+  <Termination_ByteCount>1</Termination_ByteCount>
+  <MessageDetection_RegEx>.*</MessageDetection_RegEx>
+  <Receive_End_Mode>STX_ETX_Bytes</Receive_End_Mode>
+  <Freeze_Communication_Output_Window>false</Freeze_Communication_Output_Window>
+  <Show_Whitespace>true</Show_Whitespace>
+  <Show_Nicknames>true</Show_Nicknames>
+  <Message_Window_Converter>Ascii</Message_Window_Converter>
+  <Timestamp_Messages>true</Timestamp_Messages>
+  <Show_Date>true</Show_Date>
+  <Auto_Respond>false</Auto_Respond>
+  <Autoresponses>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*\*IDN\?\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>HIOKI,PW4001-01,SIM000001,V1.00</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*\*OPT\?\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>50A_ACDC,50A_ACDC,50A_ACDC,50A_ACDC,NONE,NONE,NONE</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*\*TST\?\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>PASS</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*\*OPC\?\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>1</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*\*CLS\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList>
+        <AutoResponseStaticVariable>
+          <Name>HeaderState</Name>
+          <Value>OFF</Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>VAuto</Name>
+          <Value>OFF</Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>VRange</Name>
+          <Value>300</Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>IAuto</Name>
+          <Value>OFF</Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>IRange</Name>
+          <Value>10</Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrHeader</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrVAuto</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrVRange</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrIAuto</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrIRange</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_URMS1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_IRMS1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_P1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_S1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_Q1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_PF1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_FU1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_FI1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+      </StaticVariablesAsList>
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*\*RST\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList>
+        <AutoResponseStaticVariable>
+          <Name>HeaderState</Name>
+          <Value>ON</Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrHeader</Name>
+          <Value>:HEADER </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrVAuto</Name>
+          <Value>:VOLTAGE1:AUTO </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrVRange</Name>
+          <Value>:VOLTAGE1:RANGE </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrIAuto</Name>
+          <Value>:CURRENT1:AUTO </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrIRange</Name>
+          <Value>:CURRENT1:RANGE </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_URMS1</Name>
+          <Value>Urms1 </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_IRMS1</Name>
+          <Value>Irms1 </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_P1</Name>
+          <Value>P1 </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_S1</Name>
+          <Value>S1 </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_Q1</Name>
+          <Value>Q1 </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_PF1</Name>
+          <Value>PF1 </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_FU1</Name>
+          <Value>FU1 </Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_FI1</Name>
+          <Value>FI1 </Value>
+        </AutoResponseStaticVariable>
+      </StaticVariablesAsList>
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?HEAD(?:ER)?\s+ON\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList>
+        <AutoResponseStaticVariable>
+          <Name>HeaderState</Name>
+          <Value>OFF</Value>
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrHeader</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrVAuto</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrVRange</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrIAuto</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>HdrIRange</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_URMS1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_IRMS1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_P1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_S1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_Q1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_PF1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_FU1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+        <AutoResponseStaticVariable>
+          <Name>H_FI1</Name>
+          <Value />
+        </AutoResponseStaticVariable>
+      </StaticVariablesAsList>
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?HEAD(?:ER)?\s+OFF\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?HEAD(?:ER)?\?\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%HdrHeader%%HeaderState%</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList>
+        <AutoResponseStaticVariable>
+          <Name>VAuto</Name>
+          <Value>ON</Value>
+        </AutoResponseStaticVariable>
+      </StaticVariablesAsList>
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?VOLT(?:AGE)?1:AUTO\s+ON\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList>
+        <AutoResponseStaticVariable>
+          <Name>VAuto</Name>
+          <Value>OFF</Value>
+        </AutoResponseStaticVariable>
+      </StaticVariablesAsList>
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?VOLT(?:AGE)?1:AUTO\s+OFF\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?VOLT(?:AGE)?1:AUTO\?\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%HdrVAuto%%VAuto%</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList>
+        <string>VRange</string>
+      </RegexVariableNamesAsList>
+      <StaticVariablesAsList>
+        <AutoResponseStaticVariable>
+          <Name>VAuto</Name>
+          <Value>OFF</Value>
+        </AutoResponseStaticVariable>
+      </StaticVariablesAsList>
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?VOLT(?:AGE)?1:RANG(?:E)?\s+(6|15|30|60|150|300|600|1500)\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?VOLT(?:AGE)?1:RANG(?:E)?\?\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%HdrVRange%%VRange%</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList>
+        <AutoResponseStaticVariable>
+          <Name>IAuto</Name>
+          <Value>ON</Value>
+        </AutoResponseStaticVariable>
+      </StaticVariablesAsList>
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?CURR(?:ENT)?1:AUTO\s+ON\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList>
+        <AutoResponseStaticVariable>
+          <Name>IAuto</Name>
+          <Value>OFF</Value>
+        </AutoResponseStaticVariable>
+      </StaticVariablesAsList>
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?CURR(?:ENT)?1:AUTO\s+OFF\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?CURR(?:ENT)?1:AUTO\?\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%HdrIAuto%%IAuto%</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList>
+        <string>IRange</string>
+      </RegexVariableNamesAsList>
+      <StaticVariablesAsList>
+        <AutoResponseStaticVariable>
+          <Name>IAuto</Name>
+          <Value>OFF</Value>
+        </AutoResponseStaticVariable>
+      </StaticVariablesAsList>
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?CURR(?:ENT)?1:RANG(?:E)?\s+(1|2|5|10|20|50)\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?CURR(?:ENT)?1:RANG(?:E)?\?\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%HdrIRange%%IRange%</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?MEAS(?:URE)?\?\s+URMS1\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%H_URMS1%%RandomFloatBand(230,1,1,3)%E+00</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?MEAS(?:URE)?\?\s+IRMS1\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%H_IRMS1%%RandomFloatBand(5,0.02,0.02,5)%E+00</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?MEAS(?:URE)?\?\s+P1\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%H_P1%%RandomFloatBand(1035,8,8,2)%E+00</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?MEAS(?:URE)?\?\s+S1\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%H_S1%%RandomFloatBand(1150,8,8,2)%E+00</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?MEAS(?:URE)?\?\s+Q1\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%H_Q1%%RandomFloatBand(501.3,5,5,3)%E+00</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?MEAS(?:URE)?\?\s+PF1\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%H_PF1%%RandomFloatBand(0.9,0.005,0.005,5)%E+00</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?MEAS(?:URE)?\?\s+FU1\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%H_FU1%%RandomFloatBand(50,0.03,0.03,4)%E+00</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?MEAS(?:URE)?\?\s+FI1\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%H_FI1%%RandomFloatBand(50,0.03,0.03,4)%E+00</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>RegEx</Mode>
+      <ReceivedMessagePattern>(?i)^\s*:?MEAS(?:URE)?\?\s+URMS1\s*,\s*IRMS1\s*,\s*P1\s*,\s*FU1\s*$</ReceivedMessagePattern>
+      <ResponseDelayMs>20</ResponseDelayMs>
+      <ResponseMessage>%H_URMS1%%RandomFloatBand(230,1,1,3)%E+00,%H_IRMS1%%RandomFloatBand(5,0.02,0.02,5)%E+00,%H_P1%%RandomFloatBand(1035,8,8,2)%E+00,%H_FU1%%RandomFloatBand(50,0.03,0.03,4)%E+00</ResponseMessage>
+    </AutoResponseLine>
+    <AutoResponseLine>
+      <RegexVariableNamesAsList />
+      <StaticVariablesAsList />
+      <Mode>NoMatchResponse</Mode>
+      <ReceivedMessagePattern />
+      <ResponseDelayMs>0</ResponseDelayMs>
+      <ResponseMessage />
+    </AutoResponseLine>
+  </Autoresponses>
+  <SelectedSeqIndex>0</SelectedSeqIndex>
+  <Sequences>
+    <Sequence>
+      <Name>New Sequence</Name>
+      <SequenceLines />
+    </Sequence>
+  </Sequences>
+  <InitVariableValues>
+    <AutoResponseStaticVariable>
+      <Name>HeaderState</Name>
+      <Value>OFF</Value>
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>VAuto</Name>
+      <Value>OFF</Value>
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>VRange</Name>
+      <Value>300</Value>
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>IAuto</Name>
+      <Value>OFF</Value>
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>IRange</Name>
+      <Value>10</Value>
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>HdrHeader</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>HdrVAuto</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>HdrVRange</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>HdrIAuto</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>HdrIRange</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>H_URMS1</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>H_IRMS1</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>H_P1</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>H_S1</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>H_Q1</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>H_PF1</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>H_FU1</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+    <AutoResponseStaticVariable>
+      <Name>H_FI1</Name>
+      <Value />
+    </AutoResponseStaticVariable>
+  </InitVariableValues>
+  <FilterSystemEnabled>false</FilterSystemEnabled>
+  <FilterRules />
+  <FilteringMode>Blacklist</FilteringMode>
+  <CanBus>
+    <BusStartTime>0001-01-01T00:00:00</BusStartTime>
+    <CanMessagesLog />
+    <CanMessages />
+    <CanMessagesWatchList />
+    <CanTxMessages />
+    <DataRenderType>RawHex</DataRenderType>
+    <DataRenderTypeAsString>RawHex</DataRenderTypeAsString>
+    <CanMessagesLogWatchList />
+    <DeltaAsMs>true</DeltaAsMs>
+    <CanBusStatistics>
+      <CanBusStatistic>
+        <Name>Messages</Name>
+        <Unit>Total</Unit>
+        <Value>0</Value>
+        <DoubleValue>0</DoubleValue>
+        <IntIsDataType>true</IntIsDataType>
+        <IntValue>0</IntValue>
+      </CanBusStatistic>
+      <CanBusStatistic>
+        <Name>Messages</Name>
+        <Unit>Msg/s</Unit>
+        <Value>0</Value>
+        <DoubleValue>0</DoubleValue>
+        <IntIsDataType>true</IntIsDataType>
+        <IntValue>0</IntValue>
+      </CanBusStatistic>
+      <CanBusStatistic>
+        <Name>Messages Rx</Name>
+        <Unit>Total</Unit>
+        <Value>0</Value>
+        <DoubleValue>0</DoubleValue>
+        <IntIsDataType>true</IntIsDataType>
+        <IntValue>0</IntValue>
+      </CanBusStatistic>
+      <CanBusStatistic>
+        <Name>Messages Rx</Name>
+        <Unit>Msg/s</Unit>
+        <Value>0</Value>
+        <DoubleValue>0</DoubleValue>
+        <IntIsDataType>true</IntIsDataType>
+        <IntValue>0</IntValue>
+      </CanBusStatistic>
+      <CanBusStatistic>
+        <Name>Messages Tx</Name>
+        <Unit>Total</Unit>
+        <Value>0</Value>
+        <DoubleValue>0</DoubleValue>
+        <IntIsDataType>true</IntIsDataType>
+        <IntValue>0</IntValue>
+      </CanBusStatistic>
+      <CanBusStatistic>
+        <Name>Messages Tx</Name>
+        <Unit>Msg/s</Unit>
+        <Value>0</Value>
+        <DoubleValue>0</DoubleValue>
+        <IntIsDataType>true</IntIsDataType>
+        <IntValue>0</IntValue>
+      </CanBusStatistic>
+      <CanBusStatistic>
+        <Name>Errors</Name>
+        <Unit>Total</Unit>
+        <Value>0</Value>
+        <DoubleValue>0</DoubleValue>
+        <IntIsDataType>true</IntIsDataType>
+        <IntValue>0</IntValue>
+      </CanBusStatistic>
+      <CanBusStatistic>
+        <Name>Errors</Name>
+        <Unit>Err/s</Unit>
+        <Value>0</Value>
+        <DoubleValue>0</DoubleValue>
+        <IntIsDataType>true</IntIsDataType>
+        <IntValue>0</IntValue>
+      </CanBusStatistic>
+      <CanBusStatistic>
+        <Name>Load</Name>
+        <Unit>%</Unit>
+        <Value>0</Value>
+        <DoubleValue>0</DoubleValue>
+        <IntIsDataType>false</IntIsDataType>
+        <IntValue>0</IntValue>
+      </CanBusStatistic>
+      <CanBusStatistic>
+        <Name>Peak Load</Name>
+        <Unit>%</Unit>
+        <Value>0</Value>
+        <DoubleValue>0</DoubleValue>
+        <IntIsDataType>false</IntIsDataType>
+        <IntValue>0</IntValue>
+      </CanBusStatistic>
+    </CanBusStatistics>
+    <EnableRecording>false</EnableRecording>
+    <Pause>false</Pause>
+    <MessageIDRenderType>RawHex</MessageIDRenderType>
+    <Channel1Enabled>true</Channel1Enabled>
+    <Channel2Enabled>true</Channel2Enabled>
+  </CanBus>
+  <Send_Box_Converter>Ascii</Send_Box_Converter>
+  <Device_Commands>
+    <DeviceCommand>
+      <SendText>*IDN?</SendText>
+      <Name>Identify</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>*OPT?</SendText>
+      <Name>Options</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>*TST?</SendText>
+      <Name>Self-test (simulated)</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>*OPC?</SendText>
+      <Name>Operation complete</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>*CLS</SendText>
+      <Name>Clear status</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>*RST</SendText>
+      <Name>Reset simulator state</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:HEAD ON</SendText>
+      <Name>Headers ON</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:HEAD OFF</SendText>
+      <Name>Headers OFF</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:HEAD?</SendText>
+      <Name>Query headers</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:VOLT1:AUTO ON</SendText>
+      <Name>VOLT1 auto ON</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:VOLT1:AUTO OFF</SendText>
+      <Name>VOLT1 auto OFF</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:VOLT1:AUTO?</SendText>
+      <Name>VOLT1 auto?</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:VOLT1:RANG 300</SendText>
+      <Name>VOLT1 range 300</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:VOLT1:RANG?</SendText>
+      <Name>VOLT1 range?</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:CURR1:AUTO ON</SendText>
+      <Name>CURR1 auto ON</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:CURR1:AUTO OFF</SendText>
+      <Name>CURR1 auto OFF</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:CURR1:AUTO?</SendText>
+      <Name>CURR1 auto?</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:CURR1:RANG 10</SendText>
+      <Name>CURR1 range 10</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:CURR1:RANG?</SendText>
+      <Name>CURR1 range?</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:MEAS? Urms1</SendText>
+      <Name>Read Urms1</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:MEAS? Irms1</SendText>
+      <Name>Read Irms1</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:MEAS? P1</SendText>
+      <Name>Read P1</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:MEAS? S1</SendText>
+      <Name>Read S1</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:MEAS? Q1</SendText>
+      <Name>Read Q1</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:MEAS? PF1</SendText>
+      <Name>Read PF1</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:MEAS? FU1</SendText>
+      <Name>Read FU1</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:MEAS? FI1</SendText>
+      <Name>Read FI1</Name>
+    </DeviceCommand>
+    <DeviceCommand>
+      <SendText>:MEAS? Urms1,Irms1,P1,FU1</SendText>
+      <Name>Read U/I/P/f</Name>
+    </DeviceCommand>
+  </Device_Commands>
+  
+  <CommandsAndResponses>
+    <CommandsAndResponsesList />
+  </CommandsAndResponses>
+  <Fdx_Client>
+    <Host>127.0.0.1</Host>
+    <Port>2809</Port>
+    <TimeoutMilliseconds>1000</TimeoutMilliseconds>
+    <CycleMilliseconds>100</CycleMilliseconds>
+    <AllowRemoteControl>false</AllowRemoteControl>
+    <Groups>
+      <FdxGroup>
+        <Id>1</Id>
+        <Name>Group 1</Name>
+        <InitialHex>0000000000000000</InitialHex>
+      </FdxGroup>
+    </Groups>
+  </Fdx_Client>
+  <Fdx_Server>
+    <Host>127.0.0.1</Host>
+    <Port>2809</Port>
+    <TimeoutMilliseconds>1000</TimeoutMilliseconds>
+    <CycleMilliseconds>100</CycleMilliseconds>
+    <AllowRemoteControl>false</AllowRemoteControl>
+    <Groups>
+      <FdxGroup>
+        <Id>1</Id>
+        <Name>Group 1</Name>
+        <InitialHex>0000000000000000</InitialHex>
+      </FdxGroup>
+    </Groups>
+  </Fdx_Server>
+  <Profinet_Client>
+    <Transport>Local_Test_UDP</Transport>
+    <Adapter />
+    <TestPort>34964</TestPort>
+    <StationName>simulator-device</StationName>
+    <VendorId>0</VendorId>
+    <DeviceId>1</DeviceId>
+  </Profinet_Client>
+  <Profinet_Server>
+    <Transport>Local_Test_UDP</Transport>
+    <Adapter />
+    <TestPort>34964</TestPort>
+    <StationName>simulator-device</StationName>
+    <VendorId>0</VendorId>
+    <DeviceId>1</DeviceId>
+  </Profinet_Server>
+  <OpcUa_Client>
+    <ProfileId>d02e361614ea4e34863a94057ddf6271</ProfileId>
+    <Endpoint>opc.tcp://localhost:4840/CommunicationSimulator</Endpoint>
+    <Security>SignAndEncrypt</Security>
+    <Username />
+    <TimeoutMilliseconds>10000</TimeoutMilliseconds>
+    <PublishingMilliseconds>500</PublishingMilliseconds>
+    <NamespaceUri>urn:CommunicationSimulator:Variables</NamespaceUri>
+    <Nodes />
+    <Watches />
+  </OpcUa_Client>
+  <OpcUa_Server>
+    <ProfileId>948302c4440b487e864ff8cfdc4e4eba</ProfileId>
+    <Endpoint>opc.tcp://localhost:4840/CommunicationSimulator</Endpoint>
+    <Security>SignAndEncrypt</Security>
+    <Username />
+    <TimeoutMilliseconds>10000</TimeoutMilliseconds>
+    <PublishingMilliseconds>500</PublishingMilliseconds>
+    <NamespaceUri>urn:CommunicationSimulator:Variables</NamespaceUri>
+    <Nodes />
+    <Watches />
+  </OpcUa_Server>
+</CommunicationSimulatorSettings>
